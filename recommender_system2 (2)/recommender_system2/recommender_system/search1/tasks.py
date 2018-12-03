@@ -24,12 +24,14 @@ def find_results1():
             query_set = Keywords_Search.objects.all()
             for query in query_set:
                 list.append(query.keyword)
+#            print(list)
             list1 = []
 
         while len(list):
             for word in list:
                  k = Keywords_Search.objects.get(keyword = word)
                  if k.search == False:
+                      print(word)
                       find_results(word)
                       k.search = True
                       k.save()
@@ -40,6 +42,8 @@ def find_results1():
                 list2.append(query.keyword)
             list1.append(list)
             list =list2[len(list1):len(list2)]
+            #list = [ x for x in list2 if not in list1]
+
 
 
 @app.task
@@ -48,6 +52,7 @@ def calculate_sim_score():
         urls = Urls.objects.filter(search=False)
         for u in urls:
             if u.search == False:
+                print(u.url)
                 url = u.url
                 texts = read_file(url)
                 if(len(texts[0])==0):
@@ -57,13 +62,18 @@ def calculate_sim_score():
                 corpus = [dictionary.doc2bow(text) for text in texts]
                 lsi = models.LsiModel(corpus, id2word=dictionary, num_topics=2)
                 for k in keywords:
+                    print(k)
                     doc = k.keyword
                     c = doc.lower().split()
                     vec_bow = dictionary.doc2bow(c)
+                    print(vec_bow)
                     vec_lsi = lsi[vec_bow]
+                    print(vec_lsi)
                     if len(vec_lsi) > 0:
                         sim_score = vec_lsi[0][1]
+                        print(sim_score)
                         if sim_score >= 0.02:
+                            print("gfgjygyui")
                             try:
                                 da = Keywords_Count.objects.get(keyword=k, url=u)
                             except:
