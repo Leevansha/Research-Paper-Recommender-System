@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Urls(models.Model):
     url = models.CharField(max_length=2083, primary_key=True)
     title = models.TextField()
-    count = models.IntegerField()
+    search = models.BooleanField(default=False)
 
     def __str__(self):
         return self.url
@@ -24,9 +24,7 @@ class Keywords_Count(models.Model):
     id = models.AutoField(primary_key=True)
     keyword = models.ForeignKey(Keywords_Search, on_delete=models.CASCADE)
     url = models.ForeignKey(Urls, on_delete=models.CASCADE)
-    count = models.IntegerField()
-    tf_idf = models.FloatField()
+    sim_score = models.FloatField(default=0)
 
     def __str__(self):
         return self.url.url
-
